@@ -11,18 +11,24 @@ fetch(sheetURL)
             const cols = row.split(",");
 
             return {
-                nama: cols[0],
-                sekolah: cols[2],
-                jenis: cols[5],
-                kelas: cols[6],
-                materi: cols[8],
-                judul: cols[9],
-                deskripsi: cols[10],
-                link: cols[11]
+                nama: cols[2],
+                sekolah: cols[4],
+                jenis: cols[7],
+                kelas: cols[8],
+                materi: cols[10],
+                judul: cols[11],
+                deskripsi: cols[12],
+                link: cols[13],
+                status: cols[14]
             };
         });
 
-        renderData(allData);
+        // OPTIONAL: hanya tampilkan yang disetujui
+        const approvedData = allData.filter(item =>
+            item.status && item.status.toLowerCase().includes("karya")
+        );
+
+        renderData(approvedData);
     });
 
 function renderData(data) {
@@ -39,6 +45,7 @@ function renderData(data) {
                 <p><b>Kelas:</b> ${item.kelas}</p>
                 <p><b>Jenis:</b> ${item.jenis}</p>
                 <p><b>Guru:</b> ${item.nama}</p>
+                <p><b>Sekolah:</b> ${item.sekolah}</p>
                 <a href="${item.link}" target="_blank">Download</a>
             </div>
         `;
@@ -56,6 +63,7 @@ function filterData() {
 
     const filtered = allData.filter(item => {
         return (
+            item.judul &&
             item.judul.toLowerCase().includes(keyword) &&
             (jenis === "" || item.jenis === jenis) &&
             (kelas === "" || item.kelas === kelas)
