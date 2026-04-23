@@ -1,57 +1,63 @@
-const sheetURL = "https://docs.google.com/spreadsheets/d/1pwGj8JOudjy8iCLfpbgo71Paarb-mFz2NYRYrUi7s60/export?format=csv";
-
+const apiURL = "https://script.google.com/macros/s/AKfycbx-JSZh4MSSY1CQbfRornCNFV5ayZu3iN5m3h_WVWfV0c2q6O_jMGeNc-b0j14PHZw/exec";
 
 let allData = [];
 
-fetch(sheetURL)
-    .then(res => res.text())
-    .then(csv => {
+fetch(apiURL)
+  .then(res => res.json())
+  .then(data => {
 
-        const rows = parseCSV(csv);
-        rows.shift(); // hapus header
+    allData = data.map(item => ({
+      nama: item["Nama Lengkap"] || "",
+      sekolah: item["Asal Sekolah"] || "",
+      jenis: item["Jenis Perangkat Pembelajaran"] || "",
+      kelas: item["Kelas"] || "",
+      materi: item["Materi / Topik Pembelajaran"] || "",
+      judul: item["Judul Perangkat"] || "",
+      deskripsi: item["Deskripsi Singkat"] || "",
+      link: item["FILE / LINK"] || ""
+    }));
 
-        allData = rows.map(cols => {
-
-            return {
-                nama: cols[2] || "",
-                sekolah: cols[4] || "",
-                jenis: cols[7] || "",
-                kelas: cols[8] || "",
-                materi: cols[10] || "",
-                judul: cols[11] || "",
-                deskripsi: cols[12] || "",
-                link: cols[13] || ""
-            };
-        });
-
-        renderData(allData);
-    });
-
-function parseCSV(text) {
-    const rows = text.split("\n");
-    return rows.map(row => {
-        const matches = row.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g);
-        return matches ? matches.map(s => s.replace(/^"|"$/g, "")) : [];
-    });
-}
+    renderData(allData);
+  });
 
 function renderData(data) {
-    const container = document.getElementById("data-container");
-    container.innerHTML = "";
+  const container = document.getElementById("data-container");
+  container.innerHTML = "";
 
-    data.forEach(item => {
-        if (!item.judul) return;
+  data.forEach(item => {
+    if (!item.judul) return;
 
-        container.innerHTML += `
-            <div class="card">
-                <h3>${item.judul}</h3>
-                <p><b>Materi:</b> ${item.materi}</p>
-                <p><b>Kelas:</b> ${item.kelas}</p>
-                <p><b>Jenis:</b> ${item.jenis}</p>
-                <p><b>Guru:</b> ${item.nama}</p>
-                <p><b>Sekolah:</b> ${item.sekolah}</p>
-                <a href="${item.link}" target="_blank">Download</a>
-            </div>
-        `;
-    });
+    container.innerHTML += `
+      <div class="card">
+        <h3>${item.judul}</h3>
+        <p><b>Materi:</b> ${item.materi}</p>
+        <p><b>Kelas:</b> ${item.kelas}</p>
+        <p><b>Jenis:</b> ${item.jenis}</p>
+        <p><b>Guru:</b> ${item.nama}</p>
+        <p><b>Sekolah:</b> ${item.sekolah}</p>
+        <a href="${item.link}" target="_blank">Download</a>
+      </div>
+    `;
+  });
+}
+
+// FILTER
+document.getElementById("search").addEventListener("input", filterData);
+document.getElementById("jenis").addEventListener("change", filterData);
+document.getElementById("kelas").addEventListener("change", filterData);
+
+function filterData() {
+  const keyword = document.getElementById("search").value.toLowerCase();
+  const jenis = document.getElementById("jenis").value;
+  const kelas = document.getElementById("kelas").value;
+
+  const filtered = allData.filter(item => {
+    return (
+      item.judul.toLowerCase().includes(keyword) &&
+      (jenis === "" || item.jenis === jenis) &&
+      (kelas === "" || item.kelas === kelas)
+    );
+  });
+
+  renderData(filtered);
 }
