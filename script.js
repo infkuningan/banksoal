@@ -1,4 +1,4 @@
-const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTb_LH21HVNQw6YPgaSPLrPwkA7EbY3VJHAl3fyLSFPGgbroT-UNcVDBX4aKX5UlH6ApQ2XtZ3eo1vP/pub?output=csv";
+const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTb_LH21HVNQw6YPgaSPLrPwkA7EbY3VJHAl3fyLSFPGgbroT-UNcVDBX4aKX5UlH6ApQ2XtZ3eo1vP/pubhtml";
 
 let allData = [];
 
